@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 
 /*
 Types and Constants
@@ -71,6 +72,7 @@ enum attestation_type
     KMIP_ATTEST_SAML_ASSERTION       = 0x03
 };
 
+    /* KMIP 1.0 */
 enum attribute_type
 {
     /* KMIP 1.0 */
@@ -642,9 +644,6 @@ enum tag
     KMIP_TAG_TYPE                             = 0x000001,
     KMIP_TAG_DEFAULT                          = 0x420000,
     KMIP_TAG_ACTIVATION_DATE                  = 0x420001,
-    KMIP_TAG_APPLICATION_DATA                 = 0x420002,
-    KMIP_TAG_APPLICATION_NAMESPACE            = 0x420003,
-    KMIP_TAG_APPLICATION_SPECIFIC_INFORMATION = 0x420004,
     KMIP_TAG_ARCHIVE_DATE                     = 0x420005,
     /* KMIP 1.0 */
     KMIP_TAG_APPLICATION_DATA                 = 0x420002,

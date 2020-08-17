@@ -6,6 +6,7 @@
  * repository for more information.
  */
 
+#include <limits.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -3181,20 +3182,12 @@ kmip_print_attribute_type_enum(FILE *f, enum attribute_type value)
         fprintf(f, "Archive Date");
         break;
 
-        case KMIP_ATTR_OBJECT_GROUP:
-        fprintf(f, "Object Group");
-        break;
-
         case KMIP_ATTR_FRESH:
         fprintf(f, "Fresh");
         break;
 
         case KMIP_ATTR_LINK:
         fprintf(f, "Link");
-        break;
-
-        case KMIP_ATTR_APPLICATION_SPECIFIC_INFORMATION:
-        fprintf(f, "Application Specific Information");
         break;
 
         case KMIP_ATTR_CONTACT_INFORMATION:
@@ -3261,6 +3254,12 @@ kmip_print_attribute_type_enum(FILE *f, enum attribute_type value)
         fprintf(f, "Key Format Type");
         break;
 
+        case KMIP_ATTR_OBJECT_GROUP:
+        {
+            fprintf(f, "Object Group");
+        }
+        break;
+        
         default:
         fprintf(f, "Unknown");
         break;
@@ -3778,7 +3777,7 @@ kmip_print_date_time(FILE *f, int64 value)
 	char decoded_time[64];
 	gmtime_r(&t, tm);
 	strftime(decoded_time, sizeof decoded_time, "%F %T", tm);
-	fprintf(f, "%s (%ld)", decoded_time, value);
+	fprintf(f, "%s (%lld)", decoded_time, value);
 }
 
 void
@@ -4484,7 +4483,7 @@ kmip_print_attribute_value(FILE *f, int indent, enum attribute_type type, void *
         // case KMIP_ATTR_CRYPTOGRAPHIC_DOMAIN_PARAMETERS:	XXX how to hack struct?
 
         case KMIP_ATTR_CERTIFICATE_TYPE:
-        kmip_print_certificate_type_enum(*(enum certificate_type *)value);
+        kmip_print_certificate_type_enum(f, *(enum certificate_type *)value);
         fprintf(f, "\n");
         break;
 
@@ -4500,7 +4499,7 @@ kmip_print_attribute_value(FILE *f, int indent, enum attribute_type type, void *
         // case KMIP_ATTR_CERTIFICATE_ISSUER:	XXX how to hack struct?
 
         case KMIP_ATTR_DIGITAL_SIGNATURE_ALGORITHM:
-        kmip_print_digital_signature_algorithm_enum(*(enum digital_signature_algorithm *)value);
+        kmip_print_digital_signature_algorithm_enum(f, *(enum digital_signature_algorithm *)value);
         fprintf(f, "\n");
         break;
 
@@ -4527,46 +4526,41 @@ kmip_print_attribute_value(FILE *f, int indent, enum attribute_type type, void *
         break;
 
         case KMIP_ATTR_INITIAL_DATE:
-        kmip_print_date_time(*(int64*)value);
+        kmip_print_date_time(f, *(int64*)value);
         break;
 
         case KMIP_ATTR_ACTIVATION_DATE:
-        kmip_print_date_time(*(int64*)value);
+        kmip_print_date_time(f, *(int64*)value);
         break;
 
         case KMIP_ATTR_PROCESS_START_DATE:
-        kmip_print_date_time(*(int64*)value);
+        kmip_print_date_time(f, *(int64*)value);
         break;
 
         case KMIP_ATTR_PROTECT_STOP_DATE:
-        kmip_print_date_time(*(int64*)value);
+        kmip_print_date_time(f, *(int64*)value);
         break;
 
         case KMIP_ATTR_DEACTIVATION_DATE:
-        kmip_print_date_time(*(int64*)value);
+        kmip_print_date_time(f, *(int64*)value);
         break;
 
         case KMIP_ATTR_DESTROY_DATE:
-        kmip_print_date_time(*(int64*)value);
+        kmip_print_date_time(f, *(int64*)value);
         break;
 
         case KMIP_ATTR_COMPROMISE_OCCURRENCE_DATE:
-        kmip_print_date_time(*(int64*)value);
+        kmip_print_date_time(f, *(int64*)value);
         break;
 
         case KMIP_ATTR_COMPROMISE_DATE:
-        kmip_print_date_time(*(int64*)value);
+        kmip_print_date_time(f, *(int64*)value);
         break;
 
         // case KMIP_ATTR_REVOCATION_REASON:	XXX how to hack struct?
 
         case KMIP_ATTR_ARCHIVE_DATE:
-        kmip_print_date_time(*(int64*)value);
-        break;
-
-        case KMIP_ATTR_OBJECT_GROUP:
-        fprintf(f, "\n");
-        kmip_print_text_string(indent + 2, "Object Group", value);
+        kmip_print_date_time(f, *(int64*)value);
         break;
 
         case KMIP_ATTR_FRESH:
@@ -4578,7 +4572,7 @@ kmip_print_attribute_value(FILE *f, int indent, enum attribute_type type, void *
         // case KMIP_ATTR_CONTACT_INFORMATION:	XXX how to hack struct?
 
         case KMIP_ATTR_LAST_CHANGE_DATE:
-        kmip_print_date_time(*(int64*)value);
+        kmip_print_date_time(f, *(int64*)value);
         break;
 
         // case KMIP_ATTR_CUSTOM_ATTRIBUTE:	XXX how to hack custom?
@@ -4591,27 +4585,27 @@ kmip_print_attribute_value(FILE *f, int indent, enum attribute_type type, void *
         // case KMIP_ATTR_KEY_VALUE_LOCATION:	XXX how to hack struct?
 
         case KMIP_ATTR_ORIGINAL_CREATION_DATE:
-        kmip_print_date_time(*(int64*)value);
+        kmip_print_date_time(f, *(int64*)value);
         break;
 
         case KMIP_ATTR_RANDOM_NUMBER_GENERATOR:
         fprintf(f, "\n");
-        kmip_print_text_string(indent + 2, "Random Number Generator", value);
+        kmip_print_text_string(f, indent + 2, "Random Number Generator", value);
         break;
 
         case KMIP_ATTR_PKCS_12_FRIENDLY_NAME:
         fprintf(f, "\n");
-        kmip_print_text_string(indent + 2, "PKCS#12 Friendly Name", value);
+        kmip_print_text_string(f, indent + 2, "PKCS#12 Friendly Name", value);
         break;
 
         case KMIP_ATTR_DESCRIPTION:
         fprintf(f, "\n");
-        kmip_print_text_string(indent + 2, "Description", value);
+        kmip_print_text_string(f, indent + 2, "Description", value);
         break;
 
         case KMIP_ATTR_COMMENT:
         fprintf(f, "\n");
-        kmip_print_text_string(indent + 2, "Comment", value);
+        kmip_print_text_string(f, indent + 2, "Comment", value);
         break;
 
 
@@ -4632,8 +4626,14 @@ kmip_print_attribute_value(FILE *f, int indent, enum attribute_type type, void *
         break;
 
         case KMIP_ATTR_KEY_FORMAT_TYPE:
-        kmip_print_key_format_type_enum(*(enum key_format_type *)value);
+        kmip_print_key_format_type_enum(f, *(enum key_format_type *)value);
         fprintf(f, "\n");
+
+        case KMIP_ATTR_OBJECT_GROUP:
+        {
+            fprintf(f, "\n");
+            kmip_print_text_string(f, indent + 2, "Object Group", value);
+        }
         break;
         
         default:
@@ -4888,7 +4888,7 @@ kmip_print_locate_response_payload(FILE *f, int indent, LocateResponsePayload *v
     if(value != NULL)
     {
         fprintf(f, "%*sLocated Items: ", indent + 2, "");
-        kmip_print_integer(value->located_items);
+        kmip_print_integer(f, value->located_items);
         fprintf(f, "\n");
 
 	fprintf(f, "%*sUnique Identifiers: %d\n", indent + 2, "", value->unique_identifiers_count);
@@ -4952,6 +4952,7 @@ kmip_print_get_attributes_request_payload(FILE *f, int indent, GetAttributesRequ
     if(value != NULL)
     {
         kmip_print_text_string(
+            f,
             indent + 2,
             "Unique Identifier",
             value->unique_identifier);
@@ -4960,7 +4961,7 @@ kmip_print_get_attributes_request_payload(FILE *f, int indent, GetAttributesRequ
 	for(int i = 0; i < value->attribute_count; ++i)
 	{
 	    fprintf(f, "%*s", indent + 4, "");
-	    kmip_print_attribute_type_enum(value->attribute_names[i]);
+	    kmip_print_attribute_type_enum(f, value->attribute_names[i]);
 	    fprintf(f, "\n");
 	}
     }
@@ -4974,6 +4975,7 @@ kmip_print_get_attributes_response_payload(FILE *f, int indent, GetAttributesRes
     if(value != NULL)
     {
         kmip_print_text_string(
+            f,
             indent + 2,
             "Unique Identifier",
             value->unique_identifier);
@@ -4981,7 +4983,7 @@ kmip_print_get_attributes_response_payload(FILE *f, int indent, GetAttributesRes
 	fprintf(f, "%*sAttributes: %d\n", indent + 2, "", value->attribute_count);
 	for(int i = 0; i < value->attribute_count; ++i)
 	{
-	    kmip_print_attribute(indent + 4, value->attributes + i);
+	    kmip_print_attribute(f, indent + 4, value->attributes + i);
 	}
     }
     
@@ -4996,6 +4998,7 @@ kmip_print_get_attribute_list_request_payload(FILE *f, int indent, GetAttributeL
     if(value != NULL)
     {
         kmip_print_text_string(
+            f,
             indent + 2,
             "Unique Identifier",
             value->unique_identifier);
@@ -5010,6 +5013,7 @@ kmip_print_get_attribute_list_response_payload(FILE *f, int indent, GetAttribute
     if(value != NULL)
     {
         kmip_print_text_string(
+            f,
             indent + 2,
             "Unique Identifier",
             value->unique_identifier);
@@ -5018,7 +5022,7 @@ kmip_print_get_attribute_list_response_payload(FILE *f, int indent, GetAttribute
 	for(int i = 0; i < value->attribute_names_count; ++i)
 	{
 	    fprintf(f, "%*s", indent + 4, "");
-	    kmip_print_attribute_type_enum(value->attribute_names[i]);
+	    kmip_print_attribute_type_enum(f, value->attribute_names[i]);
 	    fprintf(f, "\n");
 	}
     }
@@ -5300,7 +5304,7 @@ kmip_print_request_header(FILE *f, int indent, RequestHeader *value)
         fprintf(f, "%*sBatch Order Option: ", indent + 2, "");
         kmip_print_bool(f, value->batch_order_option);
         fprintf(f, "\n");
-        fprintf(f, "%*sTime Stamp: %lu\n", indent + 2, "", value->time_stamp);
+        fprintf(f, "%*sTime Stamp: %llu\n", indent + 2, "", value->time_stamp);
         fprintf(f, "%*sBatch Count: %d\n", indent + 2, "", value->batch_count);
     }
 }
@@ -5313,7 +5317,7 @@ kmip_print_response_header(FILE *f, int indent, ResponseHeader *value)
     if(value != NULL)
     {
         kmip_print_protocol_version(f, indent + 2, value->protocol_version);
-        fprintf(f, "%*sTime Stamp: %lu\n", indent + 2, "", value->time_stamp);
+        fprintf(f, "%*sTime Stamp: %llu\n", indent + 2, "", value->time_stamp);
         kmip_print_nonce(f, indent + 2, value->nonce);
 
         kmip_print_byte_string(f, indent + 2, "Server Hashed Password", value->server_hashed_password);
@@ -5603,10 +5607,6 @@ kmip_free_attribute(KMIP *ctx, Attribute *value)
                 *(int64*)value->value = 0;
                 break;
 
-                case KMIP_ATTR_OBJECT_GROUP:
-                kmip_free_text_string(ctx, value->value);
-                break;
-
                 case KMIP_ATTR_FRESH:
                 *(bool32 *)value->value = 0;
                 break;
@@ -5668,6 +5668,12 @@ kmip_free_attribute(KMIP *ctx, Attribute *value)
                 *(int32*)value->value = 0;
                 break;
 
+                case KMIP_ATTR_OBJECT_GROUP:
+                {
+                    kmip_free_text_string(ctx, value->value);
+                }
+                break;
+                
                 default:
                 /* NOTE (ph) Hitting this case means that we don't know what the */
                 /*      actual type, size, or value of value->value is. We can   */
@@ -7345,7 +7351,6 @@ kmip_compare_attribute(const Attribute *a, const Attribute *b)
 
                 case KMIP_ATTR_UNIQUE_IDENTIFIER:
                 case KMIP_ATTR_OPERATION_POLICY_NAME:
-                case KMIP_ATTR_OBJECT_GROUP:
                 case KMIP_ATTR_RANDOM_NUMBER_GENERATOR:
                 case KMIP_ATTR_PKCS_12_FRIENDLY_NAME:
                 case KMIP_ATTR_DESCRIPTION:
@@ -7376,6 +7381,12 @@ kmip_compare_attribute(const Attribute *a, const Attribute *b)
                 if(*(int32*)a->value != *(int32*)b->value)
                 {
                     return(KMIP_FALSE);
+                }
+                break;
+
+                case KMIP_ATTR_OBJECT_GROUP:
+                {
+                    return(kmip_compare_text_string((TextString *)a->value, (TextString *)b->value));
                 }
                 break;
                 
@@ -10079,11 +10090,6 @@ kmip_encode_attribute_name(KMIP *ctx, enum attribute_type value)
         attribute_name.size = 4;
         break;
 
-        case KMIP_ATTR_APPLICATION_SPECIFIC_INFORMATION:
-        attribute_name.value = "Application Specific Information";
-        attribute_name.size = 32;
-        break;
-
         case KMIP_ATTR_CONTACT_INFORMATION:
         attribute_name.value = "Contact Information";
         attribute_name.size = 19;
@@ -10333,10 +10339,6 @@ kmip_encode_attribute_v1(KMIP *ctx, const Attribute *value)
         result = kmip_encode_date_time(ctx, t, *(uint64 *)value->value);
         break;
 
-        case KMIP_ATTR_OBJECT_GROUP:
-        result = kmip_encode_text_string(ctx, t, (TextString*)value->value);
-        break;
-
         case KMIP_ATTR_FRESH:
         result = kmip_encode_bool(ctx, t, *(bool32 *)value->value);
         break;
@@ -10396,6 +10398,11 @@ kmip_encode_attribute_v1(KMIP *ctx, const Attribute *value)
 
         case KMIP_ATTR_KEY_FORMAT_TYPE:
         result = kmip_encode_enum(ctx, t, *(int32 *)value->value);
+        
+        case KMIP_ATTR_OBJECT_GROUP:
+        {
+            result = kmip_encode_text_string(ctx, t, (TextString*)value->value);
+        }
         break;
 
         default:
@@ -13534,13 +13541,6 @@ kmip_decode_attribute_v1(KMIP *ctx, Attribute *value)
         CHECK_RESULT(ctx, result);
         break;
 
-        case KMIP_ATTR_OBJECT_GROUP:
-        value->value = ctx->calloc_func(ctx->state, 1, sizeof(TextString));
-        CHECK_NEW_MEMORY(ctx, value->value, sizeof(TextString), "ObjectGroup text string");
-        result = kmip_decode_text_string(ctx, t, (TextString*)value->value);
-        CHECK_RESULT(ctx, result);
-        break;
-
         case KMIP_ATTR_FRESH:
         value->value = ctx->calloc_func(ctx->state, 1, sizeof(bool32));
         CHECK_NEW_MEMORY(ctx, value->value, sizeof(bool32), "Fresh boolean");
@@ -13642,6 +13642,16 @@ kmip_decode_attribute_v1(KMIP *ctx, Attribute *value)
         CHECK_ENUM(ctx, KMIP_TAG_KEY_FORMAT_TYPE, *(int32 *)value->value);
         break;
         
+
+        case KMIP_ATTR_OBJECT_GROUP:
+        {
+            value->value = ctx->calloc_func(ctx->state, 1, sizeof(TextString));
+            CHECK_NEW_MEMORY(ctx, value->value, sizeof(TextString), "ObjectGroup text string");
+            result = kmip_decode_text_string(ctx, t, (TextString*)value->value);
+            CHECK_RESULT(ctx, result);
+        }
+        break;
+
         default:
         kmip_push_error_frame(ctx, __func__, __LINE__);
         return(KMIP_ERROR_ATTR_UNSUPPORTED);
@@ -13843,6 +13853,9 @@ kmip_decode_attribute_v2(KMIP *ctx, Attribute *value)
             CHECK_NEW_MEMORY(ctx, value->value, sizeof(int64), "InitialDate integer");
 
             result = kmip_decode_date_time(ctx, KMIP_TAG_INITIAL_DATE, (uint64 *)value->value);
+            CHECK_RESULT(ctx, result);
+        }
+        break;
 
         case KMIP_TAG_APPLICATION_SPECIFIC_INFORMATION:
         {
