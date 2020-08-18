@@ -6,6 +6,8 @@
  * repository for more information.
  */
 
+#define _DARWIN_C_SOURCE
+
 #include <limits.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -14,7 +16,6 @@
 
 #include "kmip.h"
 #include "kmip_memset.h"
-
 /*
 Miscellaneous Utilities
 */
@@ -14133,6 +14134,7 @@ kmip_decode_attribute_v2(KMIP *ctx, Attribute *value)
 
     return(KMIP_OK);
 }
+
 
 int
 kmip_decode_attribute(KMIP *ctx, Attribute *value)

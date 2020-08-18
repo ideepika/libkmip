@@ -128,6 +128,7 @@ enum attribute_type
     KMIP_ATTR_EXTRACTABLE                     = 49,
     KMIP_ATTR_NEVER_EXTRACTABLE               = 50,
     KMIP_ATTR_KEY_FORMAT_TYPE                 = 51
+
 };
 
 enum batch_error_continuation_option
@@ -646,6 +647,7 @@ enum tag
     KMIP_TAG_ACTIVATION_DATE                  = 0x420001,
     KMIP_TAG_ARCHIVE_DATE                     = 0x420005,
     /* KMIP 1.0 */
+    KMIP_TAG_ACTIVATION_DATE                  = 0x420001,
     KMIP_TAG_APPLICATION_DATA                 = 0x420002,
     KMIP_TAG_APPLICATION_NAMESPACE            = 0x420003,
     KMIP_TAG_APPLICATION_SPECIFIC_INFORMATION = 0x420004,
@@ -1367,7 +1369,7 @@ typedef struct request_header
     Authentication *authentication;
     enum batch_error_continuation_option batch_error_continuation_option;
     bool32 batch_order_option;
-    uint64 time_stamp;
+    int64 time_stamp;
     int32 batch_count;
     /* KMIP 1.2 */
     bool32 attestation_capable_indicator;
@@ -1382,7 +1384,7 @@ typedef struct response_header
 {
     /* KMIP 1.0 */
     ProtocolVersion *protocol_version;
-    uint64 time_stamp;
+    int64 time_stamp;
     int32 batch_count;
     /* KMIP 1.2 */
     Nonce *nonce;
@@ -1678,6 +1680,7 @@ void kmip_print_integer(FILE *, int32);
 void kmip_print_bool(FILE *, int32);
 void kmip_print_text_string(FILE *, int, const char *, TextString *);
 void kmip_print_byte_string(FILE *, int, const char *, ByteString *);
+void kmip_print_date_time(FILE *, int64);
 void kmip_print_protocol_version(FILE *, int, ProtocolVersion *);
 void kmip_print_name(FILE *, int, Name *);
 void kmip_print_nonce(FILE *, int, Nonce *);
@@ -1786,6 +1789,7 @@ Copying Functions
 */
 
 int32 * kmip_deep_copy_int32(KMIP *, const int32 *);
+int64 * kmip_deep_copy_int64(KMIP *, const int64 *);
 TextString * kmip_deep_copy_text_string(KMIP *, const TextString *);
 Name * kmip_deep_copy_name(KMIP *, const Name *);
 ApplicationSpecificInformation * kmip_deep_copy_application_specific_information(KMIP *, const ApplicationSpecificInformation *);
@@ -1855,7 +1859,7 @@ int kmip_encode_enum(KMIP *, enum tag, int32);
 int kmip_encode_bool(KMIP *, enum tag, bool32);
 int kmip_encode_text_string(KMIP *, enum tag, const TextString *);
 int kmip_encode_byte_string(KMIP *, enum tag, const ByteString *);
-int kmip_encode_date_time(KMIP *, enum tag, uint64);
+int kmip_encode_date_time(KMIP *, enum tag, int64);
 int kmip_encode_interval(KMIP *, enum tag, uint32);
 int kmip_encode_name(KMIP *, const Name *);
 int kmip_encode_attribute_name(KMIP *, enum attribute_type);
@@ -1919,7 +1923,7 @@ int kmip_decode_enum(KMIP *, enum tag, void *);
 int kmip_decode_bool(KMIP *, enum tag, bool32 *);
 int kmip_decode_text_string(KMIP *, enum tag, TextString *);
 int kmip_decode_byte_string(KMIP *, enum tag, ByteString *);
-int kmip_decode_date_time(KMIP *, enum tag, uint64 *);
+int kmip_decode_date_time(KMIP *, enum tag, int64 *);
 int kmip_decode_interval(KMIP *, enum tag, uint32 *);
 int kmip_decode_name(KMIP *, Name *);
 int kmip_decode_attribute_name(KMIP *, enum attribute_type *);
