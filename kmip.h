@@ -76,7 +76,6 @@ enum attestation_type
 enum attribute_type
 {
     /* KMIP 1.0 */
-<<<<<<< HEAD
     KMIP_ATTR_UNIQUE_IDENTIFIER               = 0,
     KMIP_ATTR_NAME                            = 1,
     KMIP_ATTR_OBJECT_TYPE                     = 2,
@@ -130,20 +129,6 @@ enum attribute_type
     KMIP_ATTR_NEVER_EXTRACTABLE               = 50,
     KMIP_ATTR_KEY_FORMAT_TYPE                 = 51
 
-=======
-    KMIP_ATTR_UNIQUE_IDENTIFIER                = 0,
-    KMIP_ATTR_NAME                             = 1,
-    KMIP_ATTR_OBJECT_TYPE                      = 2,
-    KMIP_ATTR_CRYPTOGRAPHIC_ALGORITHM          = 3,
-    KMIP_ATTR_CRYPTOGRAPHIC_LENGTH             = 4,
-    KMIP_ATTR_OPERATION_POLICY_NAME            = 5,
-    KMIP_ATTR_CRYPTOGRAPHIC_USAGE_MASK         = 6,
-    KMIP_ATTR_STATE                            = 7,
-    KMIP_ATTR_APPLICATION_SPECIFIC_INFORMATION = 8,
-    KMIP_ATTR_OBJECT_GROUP                     = 9,
-    KMIP_ATTR_ACTIVATION_DATE                  = 10,
-    KMIP_ATTR_DEACTIVATION_DATE                = 11
->>>>>>> b2ad319 (Add support for the Deactivation Date attribute)
 };
 
 enum batch_error_continuation_option
@@ -705,7 +690,6 @@ enum tag
     KMIP_TAG_CRYPTOGRAPHIC_LENGTH             = 0x42002A,
     KMIP_TAG_CRYPTOGRAPHIC_PARAMETERS         = 0x42002B,
     KMIP_TAG_CRYPTOGRAPHIC_USAGE_MASK         = 0x42002C,
-<<<<<<< HEAD
     KMIP_TAG_CUSTOM_ATTRIBUTE                 = 0x42002D,
     KMIP_TAG_D                                = 0x42002E,
     KMIP_TAG_DEACTIVATION_DATE                = 0x42002F,
@@ -715,9 +699,6 @@ enum tag
     KMIP_TAG_DESTROY_DATE                     = 0x420033,
     KMIP_TAG_DIGEST                           = 0x420034,
     KMIP_TAG_DIGEST_VALUE                     = 0x420035,
-=======
-    KMIP_TAG_DEACTIVATION_DATE                = 0x42002F,
->>>>>>> b2ad319 (Add support for the Deactivation Date attribute)
     KMIP_TAG_ENCRYPTION_KEY_INFORMATION       = 0x420036,
     KMIP_TAG_G                                = 0x420037,
     KMIP_TAG_HASHING_ALGORITHM                = 0x420038,
