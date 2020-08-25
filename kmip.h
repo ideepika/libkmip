@@ -76,6 +76,7 @@ enum attestation_type
 enum attribute_type
 {
     /* KMIP 1.0 */
+<<<<<<< HEAD
     KMIP_ATTR_UNIQUE_IDENTIFIER               = 0,
     KMIP_ATTR_NAME                            = 1,
     KMIP_ATTR_OBJECT_TYPE                     = 2,
@@ -129,6 +130,23 @@ enum attribute_type
     KMIP_ATTR_NEVER_EXTRACTABLE               = 50,
     KMIP_ATTR_KEY_FORMAT_TYPE                 = 51
 
+=======
+    KMIP_ATTR_UNIQUE_IDENTIFIER                = 0,
+    KMIP_ATTR_NAME                             = 1,
+    KMIP_ATTR_OBJECT_TYPE                      = 2,
+    KMIP_ATTR_CRYPTOGRAPHIC_ALGORITHM          = 3,
+    KMIP_ATTR_CRYPTOGRAPHIC_LENGTH             = 4,
+    KMIP_ATTR_OPERATION_POLICY_NAME            = 5,
+    KMIP_ATTR_CRYPTOGRAPHIC_USAGE_MASK         = 6,
+    KMIP_ATTR_STATE                            = 7,
+    KMIP_ATTR_APPLICATION_SPECIFIC_INFORMATION = 8,
+    KMIP_ATTR_OBJECT_GROUP                     = 9,
+    KMIP_ATTR_ACTIVATION_DATE                  = 10,
+    KMIP_ATTR_DEACTIVATION_DATE                = 11,
+    KMIP_ATTR_PROCESS_START_DATE               = 12,
+    KMIP_ATTR_PROTECT_STOP_DATE                = 13,
+    KMIP_ATTR_CRYPTOGRAPHIC_PARAMETERS         = 14
+>>>>>>> c387366 (Add support for the Cryptographic Parameters attribute)
 };
 
 enum batch_error_continuation_option
@@ -1791,7 +1809,9 @@ Copying Functions
 int32 * kmip_deep_copy_int32(KMIP *, const int32 *);
 int64 * kmip_deep_copy_int64(KMIP *, const int64 *);
 TextString * kmip_deep_copy_text_string(KMIP *, const TextString *);
+ByteString * kmip_deep_copy_byte_string(KMIP *, const ByteString *);
 Name * kmip_deep_copy_name(KMIP *, const Name *);
+CryptographicParameters * kmip_deep_copy_cryptographic_parameters(KMIP *, const CryptographicParameters *);
 ApplicationSpecificInformation * kmip_deep_copy_application_specific_information(KMIP *, const ApplicationSpecificInformation *);
 Attribute * kmip_deep_copy_attribute(KMIP *, const Attribute *);
 
