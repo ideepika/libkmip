@@ -1608,7 +1608,7 @@ kmip_is_tag_next(const KMIP *ctx, enum tag t)
     
     tag |= ((uint32)*index++ << 16);
     tag |= ((uint32)*index++ << 8);
-    tag |= ((uint32)*index++ << 0);
+    tag |= ((uint32)*index   << 0);
     
     if(tag != t)
     {
@@ -1638,7 +1638,7 @@ kmip_is_tag_type_next(const KMIP *ctx, enum tag t, enum type s)
     tag_type |= ((uint32)*index++ << 24);
     tag_type |= ((uint32)*index++ << 16);
     tag_type |= ((uint32)*index++ << 8);
-    tag_type |= ((uint32)*index++ << 0);
+    tag_type |= ((uint32)*index   << 0);
     
     if(tag_type != TAG_TYPE(t, s))
     {
@@ -1707,7 +1707,7 @@ kmip_peek_tag(KMIP *ctx)
 
     tag |= ((int32)*index++ << 16);
     tag |= ((int32)*index++ << 8);
-    tag |= ((int32)*index++ << 0);
+    tag |= ((int32)*index   << 0);
 
     return(tag);
 }
@@ -10359,7 +10359,7 @@ kmip_encode_attribute_v1(KMIP *ctx, const Attribute *value)
         CHECK_RESULT(ctx, result);
     }
     
-    uint8 *curr_index = ctx->index;
+    uint8 *curr_index = 0;
     uint8 *tag_index = ctx->index;
     enum tag t = KMIP_TAG_ATTRIBUTE_VALUE;
     
@@ -13509,7 +13509,7 @@ kmip_decode_attribute_v1(KMIP *ctx, Attribute *value)
         CHECK_RESULT(ctx, result);
     }
     
-    uint8 *curr_index = ctx->index;
+    uint8 *curr_index = 0;
     uint8 *tag_index = ctx->index;
     enum tag t = KMIP_TAG_ATTRIBUTE_VALUE;
     

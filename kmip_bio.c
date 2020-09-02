@@ -185,8 +185,7 @@ int kmip_bio_create_symmetric_key(BIO *bio,
         kmip_destroy(&ctx);
         return(decode_result);
     }
-    
-    enum result_status result = KMIP_STATUS_OPERATION_FAILED;
+
     if(resp_m.batch_count != 1 || resp_m.batch_items == NULL)
     {
         kmip_free_response_message(&ctx, &resp_m);
@@ -197,7 +196,7 @@ int kmip_bio_create_symmetric_key(BIO *bio,
     }
     
     ResponseBatchItem resp_item = resp_m.batch_items[0];
-    result = resp_item.result_status;
+    enum result_status result = resp_item.result_status;
 
     if(result != KMIP_STATUS_SUCCESS)
     {
@@ -425,8 +424,7 @@ int kmip_bio_destroy_symmetric_key(BIO *bio, char *uuid, int uuid_size)
         kmip_destroy(&ctx);
         return(decode_result);
     }
-    
-    enum result_status result = KMIP_STATUS_OPERATION_FAILED;
+
     if(resp_m.batch_count != 1 || resp_m.batch_items == NULL)
     {
         kmip_free_response_message(&ctx, &resp_m);
@@ -437,7 +435,7 @@ int kmip_bio_destroy_symmetric_key(BIO *bio, char *uuid, int uuid_size)
     }
     
     ResponseBatchItem resp_item = resp_m.batch_items[0];
-    result = resp_item.result_status;
+    enum result_status result = resp_item.result_status;
     
     /* Clean up the response message, the encoding buffer, and the KMIP */
     /* context. */
@@ -625,8 +623,7 @@ int kmip_bio_get_symmetric_key(BIO *bio,
     
     kmip_free_buffer(&ctx, encoding, buffer_total_size);
     encoding = NULL;
-    
-    enum result_status result = KMIP_STATUS_OPERATION_FAILED;
+
     if(resp_m.batch_count != 1 || resp_m.batch_items == NULL)
     {
         kmip_free_response_message(&ctx, &resp_m);
@@ -636,7 +633,7 @@ int kmip_bio_get_symmetric_key(BIO *bio,
     }
     
     ResponseBatchItem resp_item = resp_m.batch_items[0];
-    result = resp_item.result_status;
+    enum result_status result = resp_item.result_status;
     
     if(result != KMIP_STATUS_SUCCESS)
     {
@@ -863,8 +860,7 @@ int kmip_bio_create_symmetric_key_with_context(KMIP *ctx, BIO *bio,
         encoding = NULL;
         return(decode_result);
     }
-    
-    enum result_status result = KMIP_STATUS_OPERATION_FAILED;
+
     if(resp_m.batch_count != 1 || resp_m.batch_items == NULL)
     {
         kmip_free_response_message(ctx, &resp_m);
@@ -874,7 +870,7 @@ int kmip_bio_create_symmetric_key_with_context(KMIP *ctx, BIO *bio,
     }
     
     ResponseBatchItem resp_item = resp_m.batch_items[0];
-    result = resp_item.result_status;
+    enum result_status result = resp_item.result_status;
 
     if(result != KMIP_STATUS_SUCCESS)
     {
@@ -1297,8 +1293,7 @@ int kmip_bio_get_symmetric_key_with_context(KMIP *ctx, BIO *bio,
     
     kmip_free_buffer(ctx, encoding, buffer_total_size);
     encoding = NULL;
-    
-    enum result_status result = KMIP_STATUS_OPERATION_FAILED;
+
     if(resp_m.batch_count != 1 || resp_m.batch_items == NULL)
     {
         kmip_free_response_message(ctx, &resp_m);
@@ -1307,7 +1302,7 @@ int kmip_bio_get_symmetric_key_with_context(KMIP *ctx, BIO *bio,
     }
     
     ResponseBatchItem resp_item = resp_m.batch_items[0];
-    result = resp_item.result_status;
+    enum result_status result = resp_item.result_status;
     
     if(result != KMIP_STATUS_SUCCESS)
     {
@@ -1539,8 +1534,7 @@ int kmip_bio_destroy_symmetric_key_with_context(KMIP *ctx, BIO *bio,
         encoding = NULL;
         return(decode_result);
     }
-    
-    enum result_status result = KMIP_STATUS_OPERATION_FAILED;
+
     if(resp_m.batch_count != 1 || resp_m.batch_items == NULL)
     {
         kmip_free_response_message(ctx, &resp_m);
@@ -1550,7 +1544,7 @@ int kmip_bio_destroy_symmetric_key_with_context(KMIP *ctx, BIO *bio,
     }
     
     ResponseBatchItem resp_item = resp_m.batch_items[0];
-    result = resp_item.result_status;
+    enum result_status result = resp_item.result_status;
     
     /* Clean up the response message and the encoding buffer. */
     kmip_free_response_message(ctx, &resp_m);
