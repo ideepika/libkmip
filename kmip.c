@@ -6,8 +6,6 @@
  * repository for more information.
  */
 
-#define _DARWIN_C_SOURCE
-
 #include <limits.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -9969,6 +9967,24 @@ kmip_encode_digest(KMIP *ctx, const Digest *value)
 
     ctx->index = curr_index;
 
+kmip_encode_length(KMIP *ctx, intptr length)
+{
+    // NOTE: Length is encoded as a signed 32-bit integer but the usage of this
+    // function uses the difference between two buffer pointers to determine
+    // the length in bytes that should be encoded. See the intptr typedef in
+    // the header for type details.
+    int result = 0;
+
+    if((length > INT_MAX) || (length < 0))
+    {
+        HANDLE_FAILURE(ctx, KMIP_INVALID_LENGTH);
+    }
+    else
+    {
+        result = kmip_encode_int32_be(ctx, (int32)length);
+        CHECK_RESULT(ctx, result);
+    }
+
     return(KMIP_OK);
 }
 
@@ -9993,8 +10009,8 @@ kmip_encode_name(KMIP *ctx, const Name *value)
     
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
-    
-    result = kmip_encode_int32_be(ctx, curr_index - value_index);
+
+    result = kmip_encode_length(ctx, curr_index - value_index);
     CHECK_RESULT(ctx, result);
     
     ctx->index = curr_index;
@@ -10034,7 +10050,7 @@ kmip_encode_protection_storage_masks(KMIP *ctx, const ProtectionStorageMasks *va
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
 
-    result = kmip_encode_int32_be(ctx, curr_index - value_index);
+    result = kmip_encode_length(ctx, curr_index - value_index);
     CHECK_RESULT(ctx, result);
 
     ctx->index = curr_index;
@@ -10608,7 +10624,7 @@ kmip_encode_attribute_v1(KMIP *ctx, const Attribute *value)
     curr_index = ctx->index;
     ctx->index = length_index;
     
-    result = kmip_encode_int32_be(ctx, curr_index - value_index);
+    result = kmip_encode_length(ctx, curr_index - value_index);
     CHECK_RESULT(ctx, result);
     
     ctx->index = curr_index;
@@ -11104,7 +11120,7 @@ kmip_encode_attributes(KMIP *ctx, const Attributes *value)
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
 
-    result = kmip_encode_int32_be(ctx, curr_index - value_index);
+    result = kmip_encode_length(ctx, curr_index - value_index);
     CHECK_RESULT(ctx, result);
 
     ctx->index = curr_index;
@@ -11174,7 +11190,7 @@ kmip_encode_template_attribute(KMIP *ctx, const TemplateAttribute *value)
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    result = kmip_encode_int32_be(ctx, curr_index - value_index);
+    result = kmip_encode_length(ctx, curr_index - value_index);
     CHECK_RESULT(ctx, result);
     
     ctx->index = curr_index;
@@ -11198,8 +11214,8 @@ kmip_encode_protocol_version(KMIP *ctx, const ProtocolVersion *value)
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    kmip_encode_length(ctx, curr_index - value_index);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -11244,7 +11260,10 @@ kmip_encode_application_specific_information(KMIP *ctx, const ApplicationSpecifi
 
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
-    kmip_encode_int32_be(ctx, curr_index - value_index);
+
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
 
     return(KMIP_OK);
@@ -11377,8 +11396,9 @@ kmip_encode_cryptographic_parameters(KMIP *ctx, const CryptographicParameters *v
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -11406,8 +11426,9 @@ kmip_encode_encryption_key_information(KMIP *ctx, const EncryptionKeyInformation
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -11435,8 +11456,9 @@ kmip_encode_mac_signature_key_information(KMIP *ctx, const MACSignatureKeyInform
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -11488,8 +11510,9 @@ kmip_encode_key_wrapping_data(KMIP *ctx, const KeyWrappingData *value)
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -11512,8 +11535,9 @@ kmip_encode_transparent_symmetric_key(KMIP *ctx, const TransparentSymmetricKey *
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -11641,8 +11665,9 @@ kmip_encode_key_value(KMIP *ctx, enum key_format_type format, const KeyValue *va
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -11698,8 +11723,9 @@ kmip_encode_key_block(KMIP *ctx, const KeyBlock *value)
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -11721,8 +11747,9 @@ kmip_encode_symmetric_key(KMIP *ctx, const SymmetricKey *value)
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -11744,8 +11771,9 @@ kmip_encode_public_key(KMIP *ctx, const PublicKey *value)
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -11767,8 +11795,9 @@ kmip_encode_private_key(KMIP *ctx, const PrivateKey *value)
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -11814,8 +11843,9 @@ kmip_encode_key_wrapping_specification(KMIP *ctx, const KeyWrappingSpecification
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -11878,8 +11908,9 @@ kmip_encode_create_request_payload(KMIP *ctx, const CreateRequestPayload *value)
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -11915,8 +11946,9 @@ kmip_encode_create_response_payload(KMIP *ctx, const CreateResponsePayload *valu
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
      
     return(KMIP_OK);
@@ -12063,8 +12095,9 @@ kmip_encode_get_request_payload(KMIP *ctx, const GetRequestPayload *value)
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -12112,8 +12145,9 @@ kmip_encode_get_response_payload(KMIP *ctx, const GetResponsePayload *value)
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -12269,8 +12303,9 @@ kmip_encode_destroy_request_payload(KMIP *ctx, const DestroyRequestPayload *valu
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -12292,8 +12327,9 @@ kmip_encode_destroy_response_payload(KMIP *ctx, const DestroyResponsePayload *va
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -12318,8 +12354,9 @@ kmip_encode_nonce(KMIP *ctx, const Nonce *value)
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -12347,8 +12384,9 @@ kmip_encode_username_password_credential(KMIP *ctx, const UsernamePasswordCreden
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -12403,8 +12441,9 @@ kmip_encode_device_credential(KMIP *ctx, const DeviceCredential *value)
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -12441,8 +12480,9 @@ kmip_encode_attestation_credential(KMIP *ctx, const AttestationCredential *value
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -12496,8 +12536,9 @@ kmip_encode_credential(KMIP *ctx, const Credential *value)
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -12519,8 +12560,9 @@ kmip_encode_authentication(KMIP *ctx, const Authentication *value)
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -12611,9 +12653,10 @@ kmip_encode_request_header(KMIP *ctx, const RequestHeader *value)
     
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
-    
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -12680,8 +12723,9 @@ kmip_encode_response_header(KMIP *ctx, const ResponseHeader *value)
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -12753,8 +12797,9 @@ kmip_encode_request_batch_item(KMIP *ctx, const RequestBatchItem *value)
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -12836,8 +12881,9 @@ kmip_encode_response_batch_item(KMIP *ctx, const ResponseBatchItem *value)
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -12865,8 +12911,9 @@ kmip_encode_request_message(KMIP *ctx, const RequestMessage *value)
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
@@ -12894,8 +12941,9 @@ kmip_encode_response_message(KMIP *ctx, const ResponseMessage *value)
     uint8 *curr_index = ctx->index;
     ctx->index = length_index;
     
-    kmip_encode_int32_be(ctx, curr_index - value_index);
-    
+    result = kmip_encode_length(ctx, curr_index - value_index);
+    CHECK_RESULT(ctx, result);
+
     ctx->index = curr_index;
     
     return(KMIP_OK);
