@@ -30,12 +30,6 @@ typedef uint64_t uint64;
 
 typedef size_t memory_index;
 
-#ifdef intptr_t
-typedef intptr_t intptr;
-#else
-typedef int64 intptr;
-#endif
-
 typedef float real32;
 typedef double real64;
 
@@ -65,7 +59,6 @@ typedef double real64;
 #define KMIP_ERROR_BUFFER_UNDERFULL  (-18)
 #define KMIP_INVALID_ENCODING        (-19)
 #define KMIP_INVALID_FIELD           (-20)
-#define KMIP_INVALID_LENGTH          (-21)
 
 /*
 Enumerations
@@ -83,7 +76,6 @@ enum attestation_type
 enum attribute_type
 {
     /* KMIP 1.0 */
-<<<<<<< HEAD
     KMIP_ATTR_UNIQUE_IDENTIFIER               = 0,
     KMIP_ATTR_NAME                            = 1,
     KMIP_ATTR_OBJECT_TYPE                     = 2,
@@ -137,23 +129,6 @@ enum attribute_type
     KMIP_ATTR_NEVER_EXTRACTABLE               = 50,
     KMIP_ATTR_KEY_FORMAT_TYPE                 = 51
 
-=======
-    KMIP_ATTR_UNIQUE_IDENTIFIER                = 0,
-    KMIP_ATTR_NAME                             = 1,
-    KMIP_ATTR_OBJECT_TYPE                      = 2,
-    KMIP_ATTR_CRYPTOGRAPHIC_ALGORITHM          = 3,
-    KMIP_ATTR_CRYPTOGRAPHIC_LENGTH             = 4,
-    KMIP_ATTR_OPERATION_POLICY_NAME            = 5,
-    KMIP_ATTR_CRYPTOGRAPHIC_USAGE_MASK         = 6,
-    KMIP_ATTR_STATE                            = 7,
-    KMIP_ATTR_APPLICATION_SPECIFIC_INFORMATION = 8,
-    KMIP_ATTR_OBJECT_GROUP                     = 9,
-    KMIP_ATTR_ACTIVATION_DATE                  = 10,
-    KMIP_ATTR_DEACTIVATION_DATE                = 11,
-    KMIP_ATTR_PROCESS_START_DATE               = 12,
-    KMIP_ATTR_PROTECT_STOP_DATE                = 13,
-    KMIP_ATTR_CRYPTOGRAPHIC_PARAMETERS         = 14
->>>>>>> c387366 (Add support for the Cryptographic Parameters attribute)
 };
 
 enum batch_error_continuation_option
@@ -1509,7 +1484,7 @@ do                                                      \
         kmip_push_error_frame((A), __func__, __LINE__); \
         return(KMIP_TAG_MISMATCH);                      \
     }                                                   \
-    else if((int32)((B) & 0x000000FF) != (int32)(D))    \
+    else if((int32)(((B) << 24) >> 24) != (int32)(D))   \
     {                                                   \
         kmip_push_error_frame((A), __func__, __LINE__); \
         return(KMIP_TYPE_MISMATCH);                     \
@@ -1655,7 +1630,7 @@ void kmip_set_alloc_error_message(KMIP *, size_t, const char *);
 void kmip_set_error_message(KMIP *, const char *);
 int kmip_is_tag_next(const KMIP *, enum tag);
 int kmip_is_tag_type_next(const KMIP *, enum tag, enum type);
-size_t kmip_get_num_items_next(KMIP *, enum tag);
+int kmip_get_num_items_next(KMIP *, enum tag);
 uint32 kmip_peek_tag(KMIP *);
 int kmip_is_attribute_tag(uint32);
 
@@ -1888,7 +1863,6 @@ int kmip_encode_text_string(KMIP *, enum tag, const TextString *);
 int kmip_encode_byte_string(KMIP *, enum tag, const ByteString *);
 int kmip_encode_date_time(KMIP *, enum tag, int64);
 int kmip_encode_interval(KMIP *, enum tag, uint32);
-int kmip_encode_length(KMIP *, intptr);
 int kmip_encode_name(KMIP *, const Name *);
 int kmip_encode_attribute_name(KMIP *, enum attribute_type);
 int kmip_encode_attribute_v1(KMIP *, const Attribute *);
