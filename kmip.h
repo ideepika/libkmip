@@ -38,6 +38,8 @@ typedef double real64;
 
 #define KMIP_UNSET (-1)
 
+#define KMIP_MIN(a,b) (((a) < (b)) ? (a) : (b))
+
 #define KMIP_OK                      (0)
 #define KMIP_NOT_IMPLEMENTED         (-1)
 #define KMIP_ERROR_BUFFER_FULL       (-2)
@@ -944,6 +946,15 @@ enum tag
     KMIP_TAG_REPLACE_EXISTING                 = 0x420124,
     /* KMIP 2.0 */
     KMIP_TAG_ATTRIBUTES                       = 0x420125,
+    KMIP_TAG_SERVER_NAME                      = 0x42012D,
+    KMIP_TAG_SERVER_SERIAL_NUMBER             = 0x42012E,
+    KMIP_TAG_SERVER_VERSION                   = 0x42012F,
+    KMIP_TAG_SERVER_LOAD                      = 0x420130,
+    KMIP_TAG_PRODUCT_NAME                     = 0x420131,
+    KMIP_TAG_BUILD_LEVEL                      = 0x420132,
+    KMIP_TAG_BUILD_DATE                       = 0x420133,
+    KMIP_TAG_CLUSTER_INFO                     = 0x420134,
+    KMIP_TAG_ALTERNATE_FAILOVER_ENDPOINTS     = 0x420135,
     KMIP_TAG_EPHEMERAL                        = 0x420154,
     KMIP_TAG_SERVER_HASHED_PASSWORD           = 0x420155,
     KMIP_TAG_PROTECTION_STORAGE_MASK          = 0x42015E,
