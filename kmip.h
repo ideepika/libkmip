@@ -1448,6 +1448,89 @@ typedef struct response_message
     size_t batch_count;
 } ResponseMessage;
 
+typedef struct functions
+{
+    LinkedList *function_list;
+} Functions;
+
+typedef struct operations
+{
+    LinkedList *operation_list;
+} Operations;
+
+typedef struct object_types
+{
+    LinkedList *object_list;
+} ObjectTypes;
+
+typedef struct server_information
+{
+    TextString* server_name;
+    TextString* server_serial_number;
+    TextString* server_version;
+    TextString* server_load;
+    TextString* product_name;
+    TextString* build_level;
+    TextString* build_date;
+    TextString* cluster_info;
+ // LinkedList* alternative_failover_endpoints;   MAY be repeated
+ // Vendor-Specific               Any, MAY be repeated
+} ServerInformation;
+
+
+/*
+typedef struct application_namespaces
+{
+    LinkedList *app_namespace_list;
+} ApplicationNamespaces;
+*/
+
+typedef struct query_request_payload
+{
+    Functions* functions;
+} QueryRequestPayload;
+
+typedef struct query_response_payload
+{
+    Operations*             operations;              // Specifies an Operation that is supported by the server.
+    ObjectTypes*            objects;                 // Specifies a Managed Object Type that is supported by the server.
+    TextString*             vendor_identification;   // SHALL be returned if Query Server Information is requested. The Vendor Identification SHALL be a text string that uniquely identifies the vendor.
+    ServerInformation*      server_information;      // Contains vendor-specific information possibly be of interest to the client.
+ // ApplicationNamespaces*  application_namespaces;  // Specifies an Application Namespace supported by the server.
+ // Extension Information         No, MAY be repeated  // SHALL be returned if Query Extension List or Query Extension Map is requested and supported by the server.
+ // Attestation Type              No, MAY be repeated  // Specifies an Attestation Type that is supported by the server.
+ // RNG Parameters                No, MAY be repeated  // Specifies the RNG that is supported by the server.
+ // Profile Information           No, MAY be repeated  // Specifies the Profiles that are supported by the server.
+ // Validation Information        No, MAY be repeated  // Specifies the validations that are supported by the server.
+ // Capability Information        No, MAY be repeated  // Specifies the capabilities that are supported by the server.
+ // Client Registration Method    No, MAY be repeated  // Specifies a Client Registration Method that is supported by the server.
+ // Defaults Information          No                   // Specifies the defaults that the server will use if the client omits them.
+ // Protection Storage Masks      Yes                  // Specifies the list of Protection Storage Mask values supported by the server. A server MAY elect to provide an empty list in the Response if it is unable or unwilling to provide this information.
+} QueryResponsePayload;
+
+
+#define MAX_QUERY_LEN    128
+#define MAX_QUERY_OPS   0x40
+#define MAX_QUERY_OBJS  0x20
+
+typedef struct query_response
+{
+    size_t           operations_size;
+    int              operations[MAX_QUERY_OPS];
+    size_t           objects_size;
+    int              objects[MAX_QUERY_OBJS];
+    char             vendor_identification[MAX_QUERY_LEN];
+    bool32           server_information_valid;
+    char             server_name[MAX_QUERY_LEN];
+    char             server_serial_number[MAX_QUERY_LEN];
+    char             server_version[MAX_QUERY_LEN];
+    char             server_load[MAX_QUERY_LEN];
+    char             product_name[MAX_QUERY_LEN];
+    char             build_level[MAX_QUERY_LEN];
+    char             build_date[MAX_QUERY_LEN];
+    char             cluster_info[MAX_QUERY_LEN];
+} QueryResponse;
+
 /*
 Macros
 */
@@ -1742,6 +1825,11 @@ void kmip_print_locate_request_payload(FILE *, int, LocateRequestPayload *);
 void kmip_print_locate_response_payload(FILE *, int, LocateResponsePayload *);
 void kmip_print_object_group_member_enum(FILE *, enum object_group_member);
 void kmip_print_storage_status_mask_enum(FILE *, enum storage_status_mask);
+void kmip_print_query_function_enum(FILE*, int, enum query_function);
+void kmip_print_query_functions(FILE*, int, Functions*);
+void kmip_print_operations(FILE* f, int, Operations *);
+void kmip_print_query_request_payload(FILE*, int, QueryRequestPayload *);
+void kmip_print_query_response_payload(FILE*, int, QueryResponsePayload *);
 
 /*
 Freeing Functions
@@ -1794,6 +1882,12 @@ void kmip_free_request_header(KMIP *, RequestHeader *);
 void kmip_free_response_header(KMIP *, ResponseHeader *);
 void kmip_free_request_message(KMIP *, RequestMessage *);
 void kmip_free_response_message(KMIP *, ResponseMessage *);
+void kmip_free_query_functions(KMIP *ctx, Functions*);
+void kmip_free_query_request_payload(KMIP *, QueryRequestPayload *);
+void kmip_free_query_response_payload(KMIP *, QueryResponsePayload *);
+void kmip_free_operations(KMIP *ctx, Operations *value);
+void kmip_free_objects(KMIP *ctx, ObjectTypes* value);
+void kmip_free_server_information(KMIP* ctx, ServerInformation* value);
 
 /*
 Copying Functions
@@ -1858,6 +1952,10 @@ int kmip_compare_request_header(const RequestHeader *, const RequestHeader *);
 int kmip_compare_response_header(const ResponseHeader *, const ResponseHeader *);
 int kmip_compare_request_message(const RequestMessage *, const RequestMessage *);
 int kmip_compare_response_message(const ResponseMessage *, const ResponseMessage *);
+int kmip_compare_query_functions(const Functions* a, const Functions* b);
+int kmip_compare_operations(const Operations *a, const Operations *b);
+int kmip_compare_query_request_payload(const QueryRequestPayload *, const QueryRequestPayload *);
+int kmip_compare_query_response_payload(const QueryResponsePayload *, const QueryResponsePayload *);
 
 /*
 Encoding Functions
@@ -1922,6 +2020,9 @@ int kmip_encode_request_batch_item(KMIP *, const RequestBatchItem *);
 int kmip_encode_response_batch_item(KMIP *, const ResponseBatchItem *);
 int kmip_encode_request_message(KMIP *, const RequestMessage *);
 int kmip_encode_response_message(KMIP *, const ResponseMessage *);
+int kmip_encode_query_functions(KMIP *ctx, const Functions*);
+int kmip_encode_query_request_payload(KMIP *, const QueryRequestPayload *);
+int kmip_encode_query_response_payload(KMIP *, const QueryResponsePayload *);
 
 /*
 Decoding Functions
@@ -1986,5 +2087,10 @@ int kmip_decode_request_header(KMIP *, RequestHeader *);
 int kmip_decode_response_header(KMIP *, ResponseHeader *);
 int kmip_decode_request_message(KMIP *, RequestMessage *);
 int kmip_decode_response_message(KMIP *, ResponseMessage *);
+int kmip_decode_query_functions(KMIP *ctx, Functions*);
+int kmip_decode_operations(KMIP *ctx, Operations *);
+int kmip_decode_query_request_payload(KMIP *, QueryRequestPayload *);
+int kmip_decode_query_response_payload(KMIP *, QueryResponsePayload *);
+
 
 #endif  /* KMIP_H */
