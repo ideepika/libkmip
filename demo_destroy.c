@@ -18,6 +18,7 @@
 #endif
 
 #include "kmip.h"
+#include "kmip_io.h"
 #include "kmip_bio.h"
 
 void
