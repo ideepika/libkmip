@@ -11146,6 +11146,32 @@ kmip_compare_query_response_payload(const QueryResponsePayload *a, const QueryRe
     return(KMIP_TRUE);
 }
 
+int
+kmip_compare_activate_response_payload(const ActivateResponsePayload *a, const ActivateResponsePayload *b)
+{
+    if(a != b)
+    {
+        if((a == NULL) || (b == NULL))
+        {
+            return(KMIP_FALSE);
+        }
+
+        if(a->unique_identifier != b->unique_identifier)
+        {
+            if((a->unique_identifier == NULL) || (b->unique_identifier == NULL))
+            {
+                return(KMIP_FALSE);
+            }
+
+            if(kmip_compare_text_string(a->unique_identifier, b->unique_identifier) == KMIP_FALSE)
+            {
+                return(KMIP_FALSE);
+            }
+        }
+    }
+    return(KMIP_TRUE);
+}
+
 
 /*
 Encoding Functions
@@ -18704,6 +18730,7 @@ kmip_decode_activate_response_payload(KMIP *ctx, ActivateResponsePayload *value)
 
     /* Read length */
     result = kmip_decode_length(ctx, &length);
+    CHECK_RESULT(ctx, result);
     CHECK_BUFFER_FULL(ctx, length);
 
     /* Allocate memory for mandatory fields */
