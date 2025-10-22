@@ -79,6 +79,11 @@ jobs:
           demos/demo_create -a localhost -c pykmip-test-server/snakeoil.crt -k pykmip-test-server/snakeoil.key -p 5696 -r pykmip-test-server/snakeoil.crt &> create.log
           id="$(awk '/Symmetric Key ID:/ { print $4 }' create.log)"
 
+          demos/demo_activate 127.0.0.1 5696 pykmip-test-server/snakeoil.crt pykmip-test-server/snakeoil.key pykmip-test-server/snakeoil.crt $id &> create.log
+
+          demos/demo_encrypt 127.0.0.1 5696 pykmip-test-server/snakeoil.crt pykmip-test-server/snakeoil.key pykmip-test-server/snakeoil.crt $id &> create.log
+
+          sleep 2
           pkill uv
           jobs
           wait
