@@ -1328,6 +1328,16 @@ typedef struct destroy_response_payload
     TextString *unique_identifier;
 } DestroyResponsePayload;
 
+typedef struct activate_request_payload
+{
+    TextString *unique_identifier;
+} ActivateRequestPayload;
+
+typedef struct activate_response_payload
+{
+    TextString *unique_identifier;
+} ActivateResponsePayload;
+
 /* Authentication Structures */
 
 typedef struct credential
@@ -1537,6 +1547,106 @@ typedef struct query_response
 } QueryResponse;
 
 /*
+ * Encrypt Request Payload
+ *
+ * Required fields:
+ *   - data: The plaintext to encrypt (not required for multi-part)
+ *
+ * Optional fields:
+ *   - unique_identifier: Key ID (if NULL, server uses default key)
+ *   - cryptographic_parameters: Encryption settings (if NULL, server uses key defaults)
+ *   - iv_counter_nonce: Client-provided IV (if NULL and random_iv=1, server generates)
+ *   - correlation_value:
+ *   - init_indicator:
+ *   - final_indicator:
+ *   - authenticated_encryption_additional_data: AAD for GCM mode
+ */
+typedef struct encrypt_request_payload
+{
+    TextString *unique_identifier;     /* Key ID to use for encryption (optional) */
+    CryptographicParameters *cryptographic_parameters; /* Crypto settings (optional) */
+    ByteString *data;                  /* Plaintext data (REQUIRED for single-part/not required for multi-part) */
+    ByteString *iv_counter_nonce;      /* IV/nonce (optional) */
+    TextString *correlation_value;     /* (optional) */
+    bool32 init_indicator;             /* (optional) */
+    bool32 final_indicator;            /* (optional) */
+    ByteString *authenticated_encryption_additional_data; /* AAD for GCM (optional) */
+} EncryptRequestPayload;
+
+/*
+ * Encrypt Response Payload
+ *
+ * Required fields:
+ *   - unique_identifier: Key ID that was used
+ *
+ * Optional fields:
+ *   - data: The resulting ciphertext
+ *   - iv_counter_nonce: The IV that was used (returned if server generated it)
+ *   - correlation_value:
+ *   - authenticated_encryption_tag: Auth tag for GCM mode
+ */
+typedef struct encrypt_response_payload
+{
+    TextString *unique_identifier;     /* Key ID used (REQUIRED) */
+    ByteString *data;                  /* Ciphertext result (optional) */
+    ByteString *iv_counter_nonce;      /* IV used (if server generated) (optional) */
+    TextString *correlation_value;     /* (optional) */
+    ByteString *authenticated_encryption_tag; /* GCM auth tag (optional) */
+} EncryptResponsePayload;
+
+
+/*
+ * Decrypt Request Payload
+ *
+ * This is what the client sends to the server to request decryption.
+ *
+ * Required fields:
+ *   - data: The ciphertext to decrypt (not required for multi-part)
+ *
+ * Optional fields:
+ *   - unique_identifier: Key ID (if NULL, server may try to determine from ciphertext)
+ *   - cryptographic_parameters: Decryption settings
+ *   - iv_counter_nonce: The IV that was used during encryption
+ *   - correlation_value:
+ *   - init_indicator:
+ *   - final_indicator:
+ *   - authenticated_encryption_tag: Auth tag for GCM verification
+ *   - authenticated_encryption_additional_data: AAD for GCM verification
+ */
+typedef struct decrypt_request_payload
+{
+    TextString *unique_identifier;     /* Key ID to use (optional) */
+    CryptographicParameters *cryptographic_parameters; /* Crypto settings (optional) */
+    ByteString *data;                  /* Ciphertext (REQUIRED for single part/not required for multi-part) */
+    ByteString *iv_counter_nonce;      /* IV (optional but REQUIRED for most modes) */
+    TextString *correlation_value;      /* (optional) */
+    bool32 init_indicator;              /* (optional) */
+    bool32 final_indicator;             /* (optional) */
+    ByteString *authenticated_encryption_additional_data; /* AAD for GCM (optional) */
+    ByteString *authenticated_encryption_tag; /* GCM auth tag (optional) */
+} DecryptRequestPayload;
+
+/*
+ * Decrypt Response Payload
+ *
+ * This is what the server returns after decrypting data.
+ *
+ * Required fields:
+ *   - unique_identifier: Key ID that was used
+ *
+ * Optional fields:
+ *   - data: The resulting plaintext
+ *   - correlation_value:
+ */
+typedef struct decrypt_response_payload
+{
+    TextString *unique_identifier;     /* Key ID used (REQUIRED) */
+    ByteString *data;                  /* Plaintext result (optional) */
+    TextString *correlation_value;     /* (optional) */
+} DecryptResponsePayload;
+
+
+/*
 Macros
 */
 
@@ -1693,6 +1803,7 @@ size_t kmip_strnlen_s(const char *, size_t);
 LinkedListItem *kmip_linked_list_pop(LinkedList *);
 void kmip_linked_list_push(LinkedList *, LinkedListItem *);
 void kmip_linked_list_enqueue(LinkedList *, LinkedListItem *);
+void kmip_print_TTLV(const uint8 *buffer, int length);
 
 /*
 Memory Handlers
@@ -1731,6 +1842,7 @@ int kmip_is_tag_next(const KMIP *, enum tag);
 int kmip_is_tag_type_next(const KMIP *, enum tag, enum type);
 int kmip_get_num_items_next(KMIP *, enum tag);
 uint32 kmip_peek_tag(KMIP *);
+int32 kmip_skip_tag(KMIP *ctx);
 int kmip_is_attribute_tag(uint32);
 
 /*
@@ -1803,6 +1915,12 @@ void kmip_free_query_response_payload(KMIP *, QueryResponsePayload *);
 void kmip_free_operations(KMIP *ctx, Operations *value);
 void kmip_free_objects(KMIP *ctx, ObjectTypes* value);
 void kmip_free_server_information(KMIP* ctx, ServerInformation* value);
+void kmip_free_encrypt_request_payload(KMIP *ctx, EncryptRequestPayload *value);
+void kmip_free_encrypt_response_payload(KMIP *ctx, EncryptResponsePayload *value);
+void kmip_free_decrypt_request_payload(KMIP *ctx, DecryptRequestPayload *value);
+void kmip_free_decrypt_response_payload(KMIP *ctx, DecryptResponsePayload *value);
+void kmip_free_activate_request_payload(KMIP *ctx, ActivateRequestPayload *value);
+void kmip_free_activate_response_payload(KMIP *ctx, ActivateResponsePayload *value);
 
 /*
 Copying Functions
@@ -1941,6 +2059,9 @@ int kmip_encode_response_message(KMIP *, const ResponseMessage *);
 int kmip_encode_query_functions(KMIP *ctx, const Functions*);
 int kmip_encode_query_request_payload(KMIP *, const QueryRequestPayload *);
 int kmip_encode_query_response_payload(KMIP *, const QueryResponsePayload *);
+int kmip_encode_encrypt_request_payload(KMIP *ctx, const EncryptRequestPayload *value);
+int kmip_encode_decrypt_request_payload(KMIP *ctx, const DecryptRequestPayload *value);
+int kmip_encode_activate_request_payload(KMIP *ctx, ActivateRequestPayload *value);
 
 /*
 Decoding Functions
@@ -2011,6 +2132,8 @@ int kmip_decode_object_types(KMIP *, ObjectTypes *);
 int kmip_decode_query_request_payload(KMIP *, QueryRequestPayload *);
 int kmip_decode_query_response_payload(KMIP *, QueryResponsePayload *);
 int kmip_decode_server_information(KMIP *ctx, ServerInformation *);
-
+int kmip_decode_encrypt_response_payload(KMIP *ctx, EncryptResponsePayload *value);
+int kmip_decode_decrypt_response_payload(KMIP *ctx, DecryptResponsePayload *value);
+int kmip_decode_activate_response_payload(KMIP *ctx, ActivateResponsePayload *value);
 
 #endif  /* KMIP_H */
