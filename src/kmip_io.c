@@ -2850,7 +2850,7 @@ kmip_print_activate_response_payload(FILE *f, int indent, ActivateResponsePayloa
     
     if(value != NULL)
     {
-        kmip_print_text_string(f, indent + 2, "(O) Unique Identifier", value->unique_identifier);
+        kmip_print_text_string(f, indent + 2, "(R) Unique Identifier", value->unique_identifier);
     }
 }
 
