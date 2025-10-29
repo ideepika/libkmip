@@ -1993,6 +1993,8 @@ int kmip_compare_alternative_endpoints(const AltEndpoints* a, const AltEndpoints
 int kmip_compare_query_request_payload(const QueryRequestPayload *, const QueryRequestPayload *);
 int kmip_compare_query_response_payload(const QueryResponsePayload *, const QueryResponsePayload *);
 int kmip_compare_activate_response_payload(const ActivateResponsePayload *, const ActivateResponsePayload *);
+int kmip_compare_encrypt_response_payload(const EncryptResponsePayload *, const EncryptResponsePayload *);
+int kmip_compare_decrypt_response_payload(const DecryptResponsePayload *, const DecryptResponsePayload *);
 
 /*
 Encoding Functions

@@ -11172,6 +11172,137 @@ kmip_compare_activate_response_payload(const ActivateResponsePayload *a, const A
     return(KMIP_TRUE);
 }
 
+int
+kmip_compare_encrypt_response_payload(const EncryptResponsePayload *a, const EncryptResponsePayload *b)
+{
+    if(a != b)
+    {
+        if((a == NULL) || (b == NULL))
+        {
+            return(KMIP_FALSE);
+        }
+
+        if(a->unique_identifier != b->unique_identifier)
+        {
+            if((a->unique_identifier == NULL) || (b->unique_identifier == NULL))
+            {
+                return(KMIP_FALSE);
+            }
+
+            if(kmip_compare_text_string(a->unique_identifier, b->unique_identifier) == KMIP_FALSE)
+            {
+                return(KMIP_FALSE);
+            }
+        }
+
+        if(a->data != b->data)
+        {
+            if((a->data == NULL) || (b->data == NULL))
+            {
+                return(KMIP_FALSE);
+            }
+
+            if(kmip_compare_byte_string(a->data, b->data) == KMIP_FALSE)
+            {
+                return(KMIP_FALSE);
+            }
+        }
+
+        if(a->iv_counter_nonce != b->iv_counter_nonce)
+        {
+            if((a->iv_counter_nonce == NULL) || (b->iv_counter_nonce == NULL))
+            {
+                return(KMIP_FALSE);
+            }
+
+            if(kmip_compare_byte_string(a->iv_counter_nonce, b->iv_counter_nonce) == KMIP_FALSE)
+            {
+                return(KMIP_FALSE);
+            }
+        }
+
+        if(a->correlation_value != b->correlation_value)
+        {
+            if((a->correlation_value == NULL) || (b->correlation_value == NULL))
+            {
+                return(KMIP_FALSE);
+            }
+
+            if(kmip_compare_text_string(a->correlation_value, b->correlation_value) == KMIP_FALSE)
+            {
+                return(KMIP_FALSE);
+            }
+        }
+
+        if(a->authenticated_encryption_tag != b->authenticated_encryption_tag)
+        {
+            if((a->authenticated_encryption_tag == NULL) || (b->authenticated_encryption_tag == NULL))
+            {
+                return(KMIP_FALSE);
+            }
+
+            if(kmip_compare_byte_string(a->authenticated_encryption_tag, b->authenticated_encryption_tag) == KMIP_FALSE)
+            {
+                return(KMIP_FALSE);
+            }
+        }
+    
+    }
+    return(KMIP_TRUE);
+}
+
+int
+kmip_compare_decrypt_response_payload(const DecryptResponsePayload *a, const DecryptResponsePayload *b)
+{
+    if(a != b)
+    {
+        if((a == NULL) || (b == NULL))
+        {
+            return(KMIP_FALSE);
+        }
+
+        if(a->unique_identifier != b->unique_identifier)
+        {
+            if((a->unique_identifier == NULL) || (b->unique_identifier == NULL))
+            {
+                return(KMIP_FALSE);
+            }
+
+            if(kmip_compare_text_string(a->unique_identifier, b->unique_identifier) == KMIP_FALSE)
+            {
+                return(KMIP_FALSE);
+            }
+        }
+
+        if(a->data != b->data)
+        {
+            if((a->data == NULL) || (b->data == NULL))
+            {
+                return(KMIP_FALSE);
+            }
+
+            if(kmip_compare_byte_string(a->data, b->data) == KMIP_FALSE)
+            {
+                return(KMIP_FALSE);
+            }
+        }
+
+        if(a->correlation_value != b->correlation_value)
+        {
+            if((a->correlation_value == NULL) || (b->correlation_value == NULL))
+            {
+                return(KMIP_FALSE);
+            }
+
+            if(kmip_compare_text_string(a->correlation_value, b->correlation_value) == KMIP_FALSE)
+            {
+                return(KMIP_FALSE);
+            }
+        }
+    }
+    return(KMIP_TRUE);
+}
+
 
 /*
 Encoding Functions
