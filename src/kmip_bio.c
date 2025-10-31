@@ -1847,11 +1847,16 @@ int kmip_bio_query_with_context(KMIP *ctx, BIO *bio, enum query_function queries
  * Mid-Level API Implementation
  */
 
-int kmip_bio_active_with_context(KMIP *ctx, BIO *bio, char* key_uuid)
+int kmip_bio_activate_with_context(KMIP *ctx, BIO *bio, char* key_uuid)
 {
     if(ctx == NULL || bio == NULL)
     {
         return(KMIP_ARG_INVALID);
+    }
+// reject NULL UUID even if pykimp allows it
+    if(key_uuid == NULL)
+    {
+        return(KMIP_INVALID_FIELD);
     }
 
     // Reset context for new operation

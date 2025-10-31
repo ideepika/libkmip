@@ -52,7 +52,7 @@ int kmip_bio_send_request_encoding(KMIP *, BIO *, char *, int, char **, int *);
  * These functions require the caller to create and manage the KMIP context
  */
 
-int kmip_bio_active_with_context(KMIP *ctx, BIO *bio, char* key_uuid);
+int kmip_bio_activate_with_context(KMIP *ctx, BIO *bio, char* key_uuid);
 
 /**
  * Encrypt data using a KMIP server with caller-managed context
