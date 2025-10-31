@@ -183,7 +183,7 @@ main(int argc, char **argv)
     int result = 0;
 
     // activate key
-    result = kmip_bio_active_with_context( &ctx, bio, key_id);
+    result = kmip_bio_activate_with_context( &ctx, bio, key_id);
 
     if(result != KMIP_OK)
     {
