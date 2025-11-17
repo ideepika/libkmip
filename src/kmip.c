@@ -1076,16 +1076,6 @@ kmip_check_enum_value(enum kmip_version version, enum tag t, int value)
             case KMIP_OP_CREATE:
             return(KMIP_OK);
             break;
-
-            /* KMIP 1.2 */
-            case KMIP_OP_ENCRYPT:
-            case KMIP_OP_DECRYPT:
-            case KMIP_OP_RNG_RETRIEVE:
-            if(version >= KMIP_1_2)
-                    return(KMIP_OK);
-            else
-                    return(KMIP_INVALID_FOR_VERSION);
-            break;
             
             default:
             return(KMIP_ENUM_MISMATCH);

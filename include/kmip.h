@@ -646,7 +646,6 @@ enum tag
     KMIP_TAG_TAG                              = 0x000000,
     KMIP_TAG_TYPE                             = 0x000001,
     KMIP_TAG_DEFAULT                          = 0x420000,
-    KMIP_TAG_ACTIVATION_DATE                  = 0x420001,
     KMIP_TAG_ARCHIVE_DATE                     = 0x420005,
     /* KMIP 1.0 */
     KMIP_TAG_ACTIVATION_DATE                  = 0x420001,
