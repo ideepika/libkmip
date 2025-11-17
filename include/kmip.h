@@ -30,6 +30,12 @@ typedef uint64_t uint64;
 
 typedef size_t memory_index;
 
+#ifdef intptr_t
+typedef intptr_t intptr;
+#else
+typedef int64 intptr;
+#endif
+
 typedef float real32;
 typedef double real64;
 
@@ -61,6 +67,8 @@ typedef double real64;
 #define KMIP_ERROR_BUFFER_UNDERFULL  (-18)
 #define KMIP_INVALID_ENCODING        (-19)
 #define KMIP_INVALID_FIELD           (-20)
+#define KMIP_INVALID_LENGTH          (-21)
+
 
 /*
 Enumerations
@@ -501,7 +509,18 @@ enum operation
     KMIP_OP_JOIN_SPLIT_KEY = 0x29,
     /* KMIP 1.4 */
     KMIP_OP_IMPORT  = 0x2A,
-    KMIP_OP_EXPORT  = 0x2B
+    KMIP_OP_EXPORT  = 0x2B,
+    // # KMIP 2.0
+    KMIP_OP_LOG                  = 0x2C,
+    KMIP_OP_LOGIN                = 0x2D,
+    KMIP_OP_LOGOUT               = 0x2E,
+    KMIP_OP_DELEGATED_LOGIN      = 0x2F,
+    KMIP_OP_ADJUST_ATTRIBUTE     = 0x30,
+    KMIP_OP_SET_ATTRIBUTE        = 0x31,
+    KMIP_OP_SET_ENDPOINT_ROLE    = 0x32,
+    KMIP_OP_PKCS_11              = 0x33,
+    KMIP_OP_INTEROP              = 0x34,
+    KMIP_OP_REPROVISION          = 0x35,
 };
 
 enum padding_method
@@ -536,6 +555,29 @@ enum protection_storage_mask
     KMIP_PROTECT_OUTSOURCED        = 0x00000800,
     KMIP_PROTECT_VALIDATED         = 0x00001000,
     KMIP_PROTECT_SAME_JURISDICTION = 0x00002000
+};
+
+enum query_function
+{
+    /* KMIP 1.0 */
+    KMIP_QUERY_OPERATIONS                  = 0x0001,
+    KMIP_QUERY_OBJECTS                     = 0x0002,
+    KMIP_QUERY_SERVER_INFORMATION          = 0x0003,
+    KMIP_QUERY_APPLICATION_NAMESPACES      = 0x0004,
+    /* KMIP 1.1 */
+    KMIP_QUERY_EXTENSION_LIST              = 0x0005,
+    KMIP_QUERY_EXTENSION_MAP               = 0x0006,
+    /* KMIP 1.2 */
+    KMIP_QUERY_ATTESTATION_TYPES           = 0x0007,
+    /* KMIP 1.3 */
+    KMIP_QUERY_RNGS                        = 0x0008,
+    KMIP_QUERY_VALIDATIONS                 = 0x0009,
+    KMIP_QUERY_PROFILES                    = 0x000A,
+    KMIP_QUERY_CAPABILITIES                = 0x000B,
+    KMIP_QUERY_CLIENT_REGISTRATION_METHODS = 0x000C,
+    /* KMIP 2.0 */
+    KMIP_QUERY_DEFAULTS_INFORMATION        = 0x000D,
+    KMIP_QUERY_STORAGE_PROTECTION_MASKS    = 0x000E
 };
 
 enum result_reason
@@ -1839,7 +1881,7 @@ void kmip_set_alloc_error_message(KMIP *, size_t, const char *);
 void kmip_set_error_message(KMIP *, const char *);
 int kmip_is_tag_next(const KMIP *, enum tag);
 int kmip_is_tag_type_next(const KMIP *, enum tag, enum type);
-int kmip_get_num_items_next(KMIP *, enum tag);
+size_t kmip_get_num_items_next(KMIP *, enum tag);
 uint32 kmip_peek_tag(KMIP *);
 int32 kmip_skip_tag(KMIP *ctx);
 int kmip_is_attribute_tag(uint32);

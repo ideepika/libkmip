@@ -409,7 +409,7 @@ kmip_print_operation_enum(FILE *f, enum operation value)
         break;
 
         case KMIP_OP_JOIN_SPLIT_KEY:
-        fprintf(f, "Split Key");
+        fprintf(f, "Join Split Key");
         break;
 
         // # KMIP 1.4
