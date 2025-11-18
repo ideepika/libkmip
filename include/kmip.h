@@ -1975,6 +1975,10 @@ Name * kmip_deep_copy_name(KMIP *, const Name *);
 CryptographicParameters * kmip_deep_copy_cryptographic_parameters(KMIP *, const CryptographicParameters *);
 ApplicationSpecificInformation * kmip_deep_copy_application_specific_information(KMIP *, const ApplicationSpecificInformation *);
 Attribute * kmip_deep_copy_attribute(KMIP *, const Attribute *);
+char* kmip_copy_textstring(char* dest, TextString* src, size_t size);
+void kmip_copy_objects(int objs[], size_t* objs_size, ObjectTypes *value, unsigned max_objs);
+void kmip_copy_operations(int ops[], size_t* ops_size, Operations *value, unsigned max_ops);
+void kmip_copy_query_result(QueryResponse* query_result, QueryResponsePayload *pld);
 
 /*
 Comparison Functions
