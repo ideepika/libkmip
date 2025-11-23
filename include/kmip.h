@@ -805,6 +805,23 @@ enum wrapping_method
     KMIP_WRAP_TR31             = 0x05
 };
 
+enum storage_status_mask
+{
+    /* KMIP 1.0 */
+    KMIP_SSM_ONLINE_STORAGE = 0x1,
+    KMIP_SSM_ARCHIVAL_STORAGE = 0x2,
+    /* KMIP 2.0 */
+    KMIP_SSM_DESTROYED_STORAGE = 0x4
+};
+
+enum object_group_member
+{
+    /* KMIP 1.1 */
+    KMIP_OGM_GROUP_MEMBER_FRESH = 1,
+    KMIP_OGM_GROUP_MEMBER_DEFAULT = 2
+};
+
+
 /*
 Structures
 */
@@ -1044,6 +1061,25 @@ typedef struct create_response_payload
     TemplateAttribute *template_attribute;
 } CreateResponsePayload;
 
+typedef struct locate_request_payload
+{
+    /* KMIP 1.0 */
+    size_t maximum_items;
+    size_t offset_items;
+    enum storage_status_mask storage_status_mask;
+    enum object_group_member object_group_member;
+    Attribute *attributes;
+    int attribute_count;
+} LocateRequestPayload;
+
+typedef struct locate_response_payload
+{
+    /* KMIP 1.0 */
+    size_t located_items;
+    TextString *unique_identifiers;
+    int unique_identifiers_count;
+} LocateResponsePayload;
+
 typedef struct get_request_payload
 {
     /* KMIP 1.0 */
@@ -1061,6 +1097,35 @@ typedef struct get_response_payload
     TextString *unique_identifier;
     void *object;
 } GetResponsePayload;
+
+
+typedef struct get_attributes_request_payload
+{
+    /* KMIP 1.0 */
+    TextString *unique_identifier;
+    enum attribute_type *attribute_names;
+    int attribute_count;
+} GetAttributesRequestPayload;
+
+typedef struct get_attributes_response_payload
+{
+    TextString *unique_identifier;
+    Attribute *attributes;
+    int attribute_count;
+} GetAttributesResponsePayload;
+
+typedef struct get_attribute_list_request_payload
+{
+    /* KMIP 1.0 */
+    TextString *unique_identifier;
+} GetAttributeListRequestPayload;
+
+typedef struct get_attribute_list_response_payload
+{
+    TextString *unique_identifier;
+    enum attribute_type *attribute_names;
+    int attribute_names_count;
+} GetAttributeListResponsePayload;
 
 typedef struct destroy_request_payload
 {
