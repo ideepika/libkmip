@@ -5,6 +5,7 @@ set(libkmip_srcs
   src/kmip.c
   src/kmip_bio.c
   src/kmip_memset.c
+  src/kmip_io.c
 )
 
 add_library(kmip STATIC ${libkmip_srcs})
