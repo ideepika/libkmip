@@ -8751,6 +8751,9 @@ kmip_encode_request_batch_item(KMIP *ctx, const RequestBatchItem *value)
         result = kmip_encode_activate_request_payload(ctx, (ActivateRequestPayload*)value->request_payload);
         break;
 
+        case KMIP_OP_REVOKE:
+        result = kmip_encode_revoke_request_payload(ctx, (RevokeRequestPayload*)value->request_payload);
+        break;
 
         default:
         kmip_push_error_frame(ctx, __func__, __LINE__);
@@ -9014,7 +9017,52 @@ int kmip_encode_activate_request_payload(KMIP *ctx, ActivateRequestPayload *valu
 
     return(KMIP_OK);
 }
+int kmip_encode_revoke_request_payload(KMIP *ctx, RevokeRequestPayload *payload)
+{
+    if (ctx == NULL || payload == NULL) return KMIP_ARG_INVALID;
 
+    kmip_encode_int32_be(ctx, (0x420079 << 8) | KMIP_TYPE_STRUCTURE);
+    uint8 *wrapper_len_ptr = ctx->index;
+    ctx->index += 4; 
+    uint8 *wrapper_start = ctx->index;
+
+    if (payload->unique_identifier)
+    {
+        kmip_encode_text_string(ctx, KMIP_TAG_UNIQUE_IDENTIFIER, payload->unique_identifier);
+    }
+
+    if (payload->revocation_reason)
+    {
+        kmip_encode_int32_be(ctx, (0x420081 << 8) | KMIP_TYPE_STRUCTURE);
+        uint8 *reason_len_ptr = ctx->index;
+        ctx->index += 4;
+        uint8 *reason_start = ctx->index;
+
+        kmip_encode_int32_be(ctx, (0x420082 << 8) | KMIP_TYPE_ENUMERATION);
+        kmip_encode_int32_be(ctx, 4); /* Length is 4 */
+        kmip_encode_int32_be(ctx, (int32)payload->revocation_reason->revocation_reason_code);
+        kmip_encode_int32_be(ctx, 0); /* Mandatory 4-byte padding */
+
+        if (payload->revocation_reason->revocation_message)
+        {
+            kmip_encode_text_string(ctx, 0x420060, payload->revocation_reason->revocation_message);
+        }
+
+        uint32 r_len = (uint32)(ctx->index - reason_start);
+        reason_len_ptr[0] = (uint8)((r_len >> 24) & 0xFF);
+        reason_len_ptr[1] = (uint8)((r_len >> 16) & 0xFF);
+        reason_len_ptr[2] = (uint8)((r_len >> 8) & 0xFF);
+        reason_len_ptr[3] = (uint8)(r_len & 0xFF);
+    }
+
+    uint32 p_len = (uint32)(ctx->index - wrapper_start);
+    wrapper_len_ptr[0] = (uint8)((p_len >> 24) & 0xFF);
+    wrapper_len_ptr[1] = (uint8)((p_len >> 16) & 0xFF);
+    wrapper_len_ptr[2] = (uint8)((p_len >> 8) & 0xFF);
+    wrapper_len_ptr[3] = (uint8)(p_len & 0xFF);
+
+    return KMIP_OK;
+}
 /*
  * Encode EncryptRequestPayload
  *

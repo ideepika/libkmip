@@ -2053,6 +2053,74 @@ kmip_bio_encrypt_with_context(
     return(KMIP_OK);
 }
 
+/* Ensure this is in src/kmip_bio.c */
+int kmip_bio_revoke_with_context(KMIP *ctx, BIO *bio, char *key_uuid, int key_uuid_size, int reason)
+{
+    if(ctx == NULL || bio == NULL || key_uuid == NULL) return(KMIP_ARG_INVALID);
+
+    kmip_reset(ctx);
+    size_t buffer_total_size = 2048;
+    uint8 *encoding = ctx->calloc_func(ctx->state, 1, buffer_total_size);
+    if(encoding == NULL) return(KMIP_MEMORY_ALLOC_FAILED);
+    kmip_set_buffer(ctx, encoding, buffer_total_size);
+
+    ProtocolVersion pv = {0};
+    kmip_init_protocol_version(&pv, ctx->version);
+
+    RequestHeader rh = {0};
+    kmip_init_request_header(&rh);
+    rh.protocol_version = &pv;
+    rh.time_stamp = time(NULL);
+    rh.batch_count = 1;
+
+    RevocationReason rr = {0};
+    rr.revocation_reason_code = reason;
+
+    RevokeRequestPayload rrp = {0};
+    TextString ts_id = {0};
+    ts_id.value = key_uuid;
+    ts_id.size = key_uuid_size;
+    rrp.unique_identifier = &ts_id;
+    rrp.revocation_reason = &rr;
+
+    RequestBatchItem rbi = {0};
+    kmip_init_request_batch_item(&rbi);
+    rbi.operation = KMIP_OP_REVOKE;
+    rbi.request_payload = &rrp;
+
+    RequestMessage rm = {0};
+    rm.request_header = &rh;
+    rm.batch_items = &rbi;
+    rm.batch_count = 1;
+
+    int encode_result = kmip_encode_request_message(ctx, &rm);
+    if(encode_result != KMIP_OK) {
+        kmip_free_buffer(ctx, encoding, buffer_total_size);
+        return encode_result;
+    }
+
+    char *response_buffer = NULL;
+    int response_size = 0;
+    int result = kmip_bio_send_request_encoding(ctx, bio, (char*)ctx->buffer, ctx->index - ctx->buffer, &response_buffer, &response_size);
+    
+    kmip_free_buffer(ctx, encoding, buffer_total_size);
+    if(result < 0) return result;
+
+    kmip_set_buffer(ctx, (uint8*)response_buffer, response_size);
+    ResponseMessage resp_m = {0};
+    int decode_result = kmip_decode_response_message(ctx, &resp_m);
+    
+    int final_status = KMIP_STATUS_OPERATION_FAILED;
+    if(decode_result == KMIP_OK && resp_m.batch_items != NULL) {
+        final_status = resp_m.batch_items[0].result_status;
+        kmip_set_last_result(&resp_m.batch_items[0]);
+    }
+
+    kmip_free_response_message(ctx, &resp_m);
+    kmip_free_buffer(ctx, (uint8*)response_buffer, response_size);
+    return final_status;
+}
+
 int
 kmip_bio_decrypt_with_context(
     KMIP *ctx,
@@ -2193,8 +2261,10 @@ kmip_bio_decrypt_with_context(
         return(encode_result);
     }
 
+    printf("--- DEBUG: PRE-ENCODE STRUCTURE ---\n");
     kmip_print_request_message(stdout, &request_message);
     printf("\n");
+    fflush(stdout);
 
     /* Step 3: Send request and receive response */
     char *response_buffer = NULL;
